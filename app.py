@@ -100,10 +100,15 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 @st.cache_data(ttl=5)
-def load_data():
+def load_data(uploaded_file_bytes=None):
     file_path = "项目进度跟踪表.xlsx"
-    if not Path(file_path).exists(): return pd.DataFrame()
-    df = pd.read_excel(file_path)
+
+    if uploaded_file_bytes is not None:
+        df = pd.read_excel(uploaded_file_bytes)
+    else:
+        if not Path(file_path).exists():
+            return pd.DataFrame()
+        df = pd.read_excel(file_path)
     df.columns = [c.strip() for c in df.columns]
 
     # --- 关键列清洗：去空格、处理 NaN/空值 ---
@@ -131,7 +136,20 @@ def load_data():
 
     return df
 
-df = load_data()
+# --- 侧边栏文件上传：有上传用上传文件；无上传用本地默认文件 ---
+st.sidebar.markdown("### 数据源")
+uploaded_file = st.sidebar.file_uploader(
+    "上传 Excel 文件（.xlsx）",
+    type=["xlsx"],
+    help="上传后将优先使用该文件；不上传则默认读取本地“项目进度跟踪表.xlsx”。",
+)
+
+if uploaded_file is not None:
+    df = load_data(uploaded_file_bytes=uploaded_file)
+    st.sidebar.success(f"已加载上传文件：{uploaded_file.name}")
+else:
+    df = load_data()
+    st.sidebar.info("未上传文件，使用本地默认文件：项目进度跟踪表.xlsx")
 
 if not df.empty:
     st.markdown('<p class="main-title">车间项目智慧管理看板</p>', unsafe_allow_html=True)
