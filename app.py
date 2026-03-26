@@ -1,25 +1,22 @@
 import streamlit as st
 
-# --- 简单的登录逻辑 ---
+# --- 权限验证：新钥匙 LDM123456 ---
 def check_password():
-    """如果输入正确密码则返回 True"""
     if "password_correct" not in st.session_state:
-        # 还没输入过密码，显示输入框
         st.text_input("请输入车间看板访问密码", type="password", key="password_input")
-        st.button("登录", on_click=lambda: st.session_state.update({"password_correct": st.session_state.password_input == "123456"})) # 把 123456 改成你想要的密码
+        st.button("登录", on_click=lambda: st.session_state.update({"password_correct": st.session_state.password_input == "LDM123456"}))
         return False
     elif not st.session_state["password_correct"]:
-        # 密码输错了
         st.error("密码错误，请重新输入")
         st.text_input("请输入车间看板访问密码", type="password", key="password_input")
-        st.button("登录", on_click=lambda: st.session_state.update({"password_correct": st.session_state.password_input == "123456"}))
+        st.button("登录", on_click=lambda: st.session_state.update({"password_correct": st.session_state.password_input == "LDM123456"}))
         return False
     else:
-        # 密码正确
         return True
 
 if not check_password():
-    st.stop()  # 密码不对，停止运行后面的代码
+    st.stop()
+# ------------------------------ # 密码不对，停止运行后面的代码
 # ---------------------
 
 # 这里往下就是你原来的代码了...import streamlit as st
